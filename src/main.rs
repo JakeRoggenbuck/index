@@ -10,7 +10,7 @@ enum FieldType {
     String(String),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 struct Row {
     id: RID,
     fields: Vec<FieldType>,
@@ -30,6 +30,7 @@ impl Row {
     }
 }
 
+#[derive(Debug)]
 struct Index {
     index: BTreeMap<FieldType, Vec<RID>>,
 }
@@ -47,6 +48,8 @@ impl Index {
 
         if let Some(ids_vec) = ids_node {
             ids_vec.push(row.id);
+        } else {
+            self.index.insert(key, vec![row.id]);
         }
     }
 
@@ -74,10 +77,32 @@ fn main() {
     let mut index = Index::new();
     index.insert(row_1, 0);
 
-    let fetched_row = index.get(FieldType::String(String::from("Jake")));
+    println!("{:?}", index);
+
+    let fetched_rows = index.get(FieldType::String(String::from("Jake")));
 
     assert_eq!(
-        fetched_row.unwrap().fields[0],
+        fetched_rows.unwrap()[0].fields[0],
         FieldType::String(String::from("Jake"))
+    );
+
+    let row_2 = Row::new(1, vec![FieldType::String(String::from("Foo"))]);
+    let row_3 = Row::new(2, vec![FieldType::String(String::from("Foo"))]);
+    index.insert(row_2, 0);
+    index.insert(row_3, 0);
+
+    println!("{:?}", index);
+
+    let fetched_rows_opt_2 = index.get(FieldType::String(String::from("Foo")));
+    let fetched_rows_2 = fetched_rows_opt_2.unwrap();
+
+    assert_eq!(
+        fetched_rows_2[0].fields[0],
+        FieldType::String(String::from("Foo"))
+    );
+
+    assert_eq!(
+        fetched_rows_2[1].fields[0],
+        FieldType::String(String::from("Foo"))
     );
 }
