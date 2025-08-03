@@ -31,7 +31,7 @@ impl Row {
 }
 
 struct Index {
-    index: BTreeMap<FieldType, RID>,
+    index: BTreeMap<FieldType, Vec<RID>>,
 }
 
 impl Index {
@@ -43,7 +43,11 @@ impl Index {
 
     fn insert(&mut self, row: Row, index_on_col: usize) {
         let key = row.fields[index_on_col].clone();
-        self.index.insert(key, row.id);
+        let ids_node: Option<&mut Vec<usize>> = self.index.get_mut(&key);
+
+        if let Some(ids_vec) = ids_node {
+            ids_vec.push(row.id);
+        }
     }
 
     fn get(&self, key: FieldType) -> Option<Row> {
