@@ -2,16 +2,16 @@ use once_cell::sync::Lazy;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
-type RID = usize;
+pub type RID = usize;
 
 #[derive(Debug, Eq, Clone, PartialEq, Ord, PartialOrd)]
-enum FieldType {
+pub enum FieldType {
     Int(i64),
     String(String),
 }
 
 #[derive(Debug, Clone, PartialEq)]
-struct Row {
+pub struct Row {
     id: RID,
     fields: Vec<FieldType>,
 }
@@ -22,7 +22,7 @@ struct Row {
 static BUFFERPOOL_MOCK: Lazy<Mutex<Vec<Row>>> = Lazy::new(|| Mutex::new(Vec::new()));
 
 impl Row {
-    fn new(id: RID, fields: Vec<FieldType>) -> Self {
+    pub fn new(id: RID, fields: Vec<FieldType>) -> Self {
         let r = Row { id, fields };
         let mut b = BUFFERPOOL_MOCK.lock().unwrap();
         b.push(r.clone());
@@ -31,18 +31,18 @@ impl Row {
 }
 
 #[derive(Debug)]
-struct Index {
+pub struct Index {
     index: BTreeMap<FieldType, Vec<RID>>,
 }
 
 impl Index {
-    fn new() -> Self {
+    pub fn new() -> Self {
         return Index {
             index: BTreeMap::new(),
         };
     }
 
-    fn insert(&mut self, row: Row, index_on_col: usize) {
+    pub fn insert(&mut self, row: Row, index_on_col: usize) {
         let key = row.fields[index_on_col].clone();
         let ids_node: Option<&mut Vec<usize>> = self.index.get_mut(&key);
 
@@ -53,7 +53,7 @@ impl Index {
         }
     }
 
-    fn get(&self, key: FieldType) -> Option<Vec<Row>> {
+    pub fn get(&self, key: FieldType) -> Option<Vec<Row>> {
         let ids_node = self.index.get(&key);
 
         let bp = BUFFERPOOL_MOCK.lock().unwrap();
