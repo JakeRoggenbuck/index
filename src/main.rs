@@ -71,38 +71,49 @@ impl Index {
     }
 }
 
-fn main() {
-    let row_1 = Row::new(0, vec![FieldType::String(String::from("Jake"))]);
+fn main() {}
 
-    let mut index = Index::new();
-    index.insert(row_1, 0);
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    println!("{:?}", index);
+    #[test]
+    fn basic_insert_test() {
+        let mut index = Index::new();
 
-    let fetched_rows = index.get(FieldType::String(String::from("Jake")));
+        let row_1 = Row::new(0, vec![FieldType::String(String::from("Jake"))]);
+        index.insert(row_1, 0);
 
-    assert_eq!(
-        fetched_rows.unwrap()[0].fields[0],
-        FieldType::String(String::from("Jake"))
-    );
+        let fetched_rows = index.get(FieldType::String(String::from("Jake")));
 
-    let row_2 = Row::new(1, vec![FieldType::String(String::from("Foo"))]);
-    let row_3 = Row::new(2, vec![FieldType::String(String::from("Foo"))]);
-    index.insert(row_2, 0);
-    index.insert(row_3, 0);
+        assert_eq!(
+            fetched_rows.unwrap()[0].fields[0],
+            FieldType::String(String::from("Jake"))
+        );
+    }
 
-    println!("{:?}", index);
+    #[test]
+    fn duplicate_insert_test() {
+        let mut index = Index::new();
 
-    let fetched_rows_opt_2 = index.get(FieldType::String(String::from("Foo")));
-    let fetched_rows_2 = fetched_rows_opt_2.unwrap();
+        let row_2 = Row::new(1, vec![FieldType::String(String::from("Foo"))]);
+        let row_3 = Row::new(2, vec![FieldType::String(String::from("Foo"))]);
+        index.insert(row_2, 0);
+        index.insert(row_3, 0);
 
-    assert_eq!(
-        fetched_rows_2[0].fields[0],
-        FieldType::String(String::from("Foo"))
-    );
+        println!("{:?}", index);
 
-    assert_eq!(
-        fetched_rows_2[1].fields[0],
-        FieldType::String(String::from("Foo"))
-    );
+        let fetched_rows_opt_2 = index.get(FieldType::String(String::from("Foo")));
+        let fetched_rows_2 = fetched_rows_opt_2.unwrap();
+
+        assert_eq!(
+            fetched_rows_2[0].fields[0],
+            FieldType::String(String::from("Foo"))
+        );
+
+        assert_eq!(
+            fetched_rows_2[1].fields[0],
+            FieldType::String(String::from("Foo"))
+        );
+    }
 }
