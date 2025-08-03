@@ -50,16 +50,21 @@ impl Index {
         }
     }
 
-    fn get(&self, key: FieldType) -> Option<Row> {
-        let i = self.index.get(&key);
+    fn get(&self, key: FieldType) -> Option<Vec<Row>> {
+        let ids_node = self.index.get(&key);
 
-        match i {
-            Some(a) => {
-                let b = BUFFERPOOL_MOCK.lock().unwrap();
-                return Some(b[*a].clone());
+        let bp = BUFFERPOOL_MOCK.lock().unwrap();
+        let mut rows = vec![];
+
+        if let Some(ids_vec) = ids_node {
+            for id in ids_vec {
+                rows.push(bp[*id].clone());
             }
-            None => None,
+
+            return Some(rows);
         }
+
+        None
     }
 }
 
