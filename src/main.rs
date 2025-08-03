@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 type RID = usize;
 
-#[derive(Debug)]
+#[derive(Debug, Eq, Clone, PartialEq, Ord, PartialOrd)]
 enum FieldType {
     Int(i64),
     String(String),
@@ -14,18 +14,21 @@ struct Row {
     fields: Vec<FieldType>,
 }
 
-struct Index<T> {
-    index: BTreeMap<T, RID>,
+struct Index {
+    index: BTreeMap<FieldType, RID>,
 }
 
-impl<T> Index<T> {
+impl Index {
     fn new() -> Self {
         return Index {
             index: BTreeMap::new(),
         };
     }
 
-    fn insert(row: Row) {}
+    fn insert(&mut self, row: Row, index_on_col: usize) {
+        let key = row.fields[index_on_col].clone();
+        self.index.insert(key, row.id);
+    }
 }
 
 fn main() {
@@ -34,7 +37,6 @@ fn main() {
         fields: vec![FieldType::String(String::from("Jake"))],
     };
 
-    let index = Index::<String>::new();
-
-    println!("{:?}", row_1);
+    let mut index = Index::new();
+    index.insert(row_1, 0);
 }
