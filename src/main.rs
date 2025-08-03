@@ -101,8 +101,6 @@ mod tests {
         index.insert(row_2, 0);
         index.insert(row_3, 0);
 
-        println!("{:?}", index);
-
         let fetched_rows_opt_2 = index.get(FieldType::String(String::from("Foo")));
         let fetched_rows_2 = fetched_rows_opt_2.unwrap();
 
