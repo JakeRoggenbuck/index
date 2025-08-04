@@ -23,10 +23,10 @@ static BUFFERPOOL_MOCK: Lazy<Mutex<Vec<Row>>> = Lazy::new(|| Mutex::new(Vec::new
 
 impl Row {
     pub fn new(id: RID, fields: Vec<FieldType>) -> Self {
-        let r = Row { id, fields };
+        let row = Row { id, fields };
         let mut b = BUFFERPOOL_MOCK.lock().unwrap();
-        b.push(r.clone());
-        r
+        b.push(row.clone());
+        row
     }
 }
 
