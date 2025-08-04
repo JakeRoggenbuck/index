@@ -21,6 +21,11 @@ pub struct Row {
 // others will be put on disk
 static BUFFERPOOL_MOCK: Lazy<Mutex<Vec<Row>>> = Lazy::new(|| Mutex::new(Vec::new()));
 
+pub fn get_row_from_bufferpool(id: usize) -> Row {
+    let bp = BUFFERPOOL_MOCK.lock().unwrap();
+    bp[id].clone()
+}
+
 impl Row {
     pub fn new(id: RID, fields: Vec<FieldType>) -> Self {
         let row = Row { id, fields };
@@ -53,15 +58,15 @@ impl Index {
         }
     }
 
-    pub fn get(&self, key: FieldType) -> Option<Vec<Row>> {
+    pub fn get(&self, key: FieldType, get_row: &dyn Fn(usize) -> Row) -> Option<Vec<Row>> {
         let ids_node = self.index.get(&key);
 
-        let bp = BUFFERPOOL_MOCK.lock().unwrap();
         let mut rows = vec![];
 
         if let Some(ids_vec) = ids_node {
             for id in ids_vec {
-                rows.push(bp[*id].clone());
+                let row: Row = get_row(*id);
+                rows.push(row);
             }
 
             return Some(rows);
@@ -84,7 +89,10 @@ mod tests {
         let row_1 = Row::new(0, vec![FieldType::String(String::from("Jake"))]);
         index.insert(row_1, 0);
 
-        let fetched_rows = index.get(FieldType::String(String::from("Jake")));
+        let fetched_rows = index.get(
+            FieldType::String(String::from("Jake")),
+            &get_row_from_bufferpool,
+        );
 
         assert_eq!(
             fetched_rows.unwrap()[0].fields[0],
@@ -101,7 +109,10 @@ mod tests {
         index.insert(row_2, 0);
         index.insert(row_3, 0);
 
-        let fetched_rows_opt_2 = index.get(FieldType::String(String::from("Foo")));
+        let fetched_rows_opt_2 = index.get(
+            FieldType::String(String::from("Foo")),
+            &get_row_from_bufferpool,
+        );
         let fetched_rows_2 = fetched_rows_opt_2.unwrap();
 
         assert_eq!(
