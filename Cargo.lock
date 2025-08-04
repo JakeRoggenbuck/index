@@ -3,7 +3,7 @@
 version = 4
 
 [[package]]
-name = "index"
+name = "indexrs"
 version = "0.1.0"
 dependencies = [
  "once_cell",

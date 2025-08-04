@@ -35,6 +35,12 @@ impl Row {
     }
 }
 
+/// The Index structure
+///
+/// Use this to create an index on any column of a Row to achieve O(log n)
+/// loopup for any key.
+///
+/// Index { index: {String("Foo"): [1, 2]} }
 #[derive(Debug)]
 pub struct Index {
     index: BTreeMap<FieldType, Vec<RID>>,
@@ -47,6 +53,23 @@ impl Index {
         };
     }
 
+    /// ```rust
+    /// use indexrs::*;
+    ///
+    /// let mut index = Index::new();
+    /// let row1 = Row::new(0, vec![FieldType::String("Jake".to_string())]);
+    /// let row2 = Row::new(1, vec![FieldType::String("Jake".to_string())]);
+    ///
+    /// index.insert(row1, 0);
+    /// index.insert(row2, 0);
+    ///
+    /// let results = index.get(
+    ///     FieldType::String("Jake".to_string()),
+    ///     &get_row_from_bufferpool
+    /// );
+    ///
+    /// assert_eq!(results.unwrap().len(), 2);
+    /// ```
     pub fn insert(&mut self, row: Row, index_on_col: usize) {
         let key = row.fields[index_on_col].clone();
         let ids_node: Option<&mut Vec<usize>> = self.index.get_mut(&key);
@@ -75,8 +98,6 @@ impl Index {
         None
     }
 }
-
-fn main() {}
 
 #[cfg(test)]
 mod tests {
@@ -114,6 +135,8 @@ mod tests {
             &get_row_from_bufferpool,
         );
         let fetched_rows_2 = fetched_rows_opt_2.unwrap();
+
+        println!("{:?}", index);
 
         assert_eq!(
             fetched_rows_2[0].fields[0],
