@@ -84,14 +84,11 @@ impl Index {
     pub fn get(&self, key: FieldType, get_row: &dyn Fn(usize) -> Row) -> Option<Vec<Row>> {
         let ids_node = self.index.get(&key);
 
-        let mut rows = vec![];
+        let mut rows = Vec::<Row>::new();
 
         if let Some(ids_vec) = ids_node {
-            for id in ids_vec {
-                let row: Row = get_row(*id);
-                rows.push(row);
-            }
-
+            // Collect all of the rows with that key
+            ids_vec.iter().for_each(|id| rows.push(get_row(*id)));
             return Some(rows);
         }
 
