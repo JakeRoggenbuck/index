@@ -2,7 +2,7 @@
 
 ![Rust](https://img.shields.io/badge/Rust-1A5D8A?style=for-the-badge&logo=rust&logoColor=white)
 
-This is an index for a database that uses BTrees behind the scenes.
+Index for a database using BTrees behind the scenes.
 
 ### Databse Series
 
