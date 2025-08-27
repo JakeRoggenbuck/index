@@ -1,6 +1,7 @@
 # index
 
 ![Rust](https://img.shields.io/badge/Rust-1A5D8A?style=for-the-badge&logo=rust&logoColor=white)
+[![Rust](https://img.shields.io/github/actions/workflow/status/jakeroggenbuck/index/rust.yml?branch=main&style=for-the-badge)](https://github.com/JakeRoggenbuck/index/actions)
 
 Index for a database using BTrees behind the scenes.
 
